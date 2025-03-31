@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView, ListView, DetailView
 from django.utils import timezone
-from blog.models import Post, Category
+from blog.models import Post, Category, Location
 from django.http import Http404
 
 # Create your views here.
@@ -92,16 +92,51 @@ class PostDetailView(DetailView):
             raise Http404("Публикация еще не опубликована")
         return post
 
-def post_detail(request, pk):
-    template_name = 'blog/detail.html'
-    context = {'post': posts[pk]}
+def index(request):
+    post_list = Post.objects.filter(
+        pub_date__lte=timezone.now(),
+        is_published=True,
+        category__is_published=True
+    ).order_by('-pub_date')
+    context = {'post_list': post_list}
+    return render(request, 'blog/index.html', context)
 
-    return render(request, template_name, context)
+
+def post_detail(request, id):
+    post = get_object_or_404(
+        Post.objects.filter(
+            pub_date__lte=timezone.now(),
+            is_published=True,
+            category__is_published=True
+        ),
+        id=id
+    )
+    context = {'post': post}
+    return render(request, 'blog/detail.html', context)
 
 
-def category_posts(request, slug):
-    # Адрес шаблона сохранён в переменную, это не обязательно, но удобно.
-    template_name = 'blog/category.html'
-    context = {'category': slug}
-    # Третьим аргументом в render() передаём словарь context:
-    return render(request, template_name, context)
+def category_posts(request, category_slug):
+    category = get_object_or_404(
+        Category.objects.filter(is_published=True),
+        slug=category_slug
+    )
+    post_list = Post.objects.filter(
+        pub_date__lte=timezone.now(),
+        is_published=True,
+        category__is_published=True,
+        category=category
+    ).order_by('-pub_date')
+    context = {'category': category, 'post_list': post_list}
+    return render(request, 'blog/category.html', context)
+
+
+def location_posts(request, location_slug):
+    location = get_object_or_404(Location, slug=location_slug)
+    post_list = Post.objects.filter(
+        pub_date__lte=timezone.now(),
+        is_published=True,
+        category__is_published=True,
+        location=location
+    ).order_by('-pub_date')
+    context = {'location': location, 'post_list': post_list}
+    return render(request, 'blog/location.html', context)
