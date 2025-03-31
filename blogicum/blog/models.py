@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class Category(models.Model):
     title = models.CharField(
         'Заголовок',
@@ -40,6 +41,7 @@ class Category(models.Model):
 
         return self.title
 
+
 class Location(models.Model):
     name = models.CharField(
         'Название места',
@@ -63,6 +65,7 @@ class Location(models.Model):
     def __str__(self):
 
         return self.name
+
 
 class Post(models.Model):
     title = models.CharField(

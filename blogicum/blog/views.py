@@ -15,8 +15,8 @@ class HomePageView(TemplateView):
             category__is_published=True,
             pub_date__lte=timezone.now()
         )[:5]
-
         return context 
+
 
 class CategoryPostsView(ListView):
     model = Post
@@ -38,8 +38,8 @@ class CategoryPostsView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = self.category
-
         return context
+
 
 class PostDetailView(DetailView):
     model = Post
@@ -53,5 +53,4 @@ class PostDetailView(DetailView):
             raise Http404("Категория публикации не опубликована")
         if post.pub_date > timezone.now():
             raise Http404("Публикация еще не опубликована")
-        
         return post
