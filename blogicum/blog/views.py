@@ -34,6 +34,7 @@ class CategoryPostsView(ListView):
             is_published=True,
             pub_date__lte=timezone.now()
         ).order_by('-pub_date')
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = self.category
@@ -43,6 +44,7 @@ class CategoryPostsView(ListView):
 class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/detail.html'
+    
     def get_object(self, queryset=None):
         post = super().get_object(queryset)
         if not post.is_published:
